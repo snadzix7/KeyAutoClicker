@@ -1,0 +1,29 @@
+name: Build EXE
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Pobierz kod
+        uses: actions/checkout@v4
+
+      - name: Zainstaluj .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Zbuduj maly EXE
+        run: dotnet publish KeyAutoClicker.csproj -c Release -r win-x64 --self-contained false /p:PublishSingleFile=true /p:DebugType=None /p:DebugSymbols=false
+
+      - name: Wrzuc EXE do pobrania
+        uses: actions/upload-artifact@v4
+        with:
+          name: KeyAutoClicker-EXE
+          path: bin/Release/net8.0-windows/win-x64/publish/*.exe
